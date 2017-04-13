@@ -1,0 +1,23 @@
+﻿@using System.Data.Entity
+@using wikiasp.Models
+@{
+    ViewBag.Title = "Home Page";
+
+    var db = new WikiaModels();
+    ViewBag.WikiList = db.Wikias.ToList();
+}
+
+<div class="jumbotron">
+    <h1>Currently there are @ViewBag.WikiList.Count Wikias</h1>
+    <h3>Just pick one from below and start reading or writing!</h3>
+</div>
+
+<ul class="list-group">
+    @{
+        foreach (Wikias wiki in ViewBag.WikiList)
+        {
+            <li><a  class="list-group-item" href="/wiki/show/@wiki.IndexElementId">@wiki.Title</a></li>
+        }
+    }
+</ul>
+

@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewBag.Title = "Show";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    if (ViewBag.Element != null)
+    {
+        <h2>@ViewBag.Element.Title</h2>
+
+        <p>@ViewBag.Element.Body</p>
+    }
+    else
+    {
+        <h1>There is no such element in the database!</h1>
+    }
+}
+
+
