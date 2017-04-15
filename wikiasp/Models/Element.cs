@@ -27,5 +27,14 @@ namespace wikiasp.Models
         public DateTime LastUpdateDate { get; set; }
 
         public int WikiaId { get; set; }
+
+        public Element() { }
+
+        public Element(string title, string body, int wikiaId)
+        {
+            Title = title;
+            Body = body;
+            WikiaId = wikiaId;
+        }
     }
 }

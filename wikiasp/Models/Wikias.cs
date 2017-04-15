@@ -19,5 +19,6 @@ namespace wikiasp.Models
         public DateTime CreationDate { get; set; }
 
         public DateTime LastUpdateDate { get; set; }
+        
     }
 }

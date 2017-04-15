@@ -1,4 +1,7 @@
-﻿
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using wikiasp.Models
+
 @{
     ViewBag.Title = "Show";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,7 +10,23 @@
 @{
     if (ViewBag.Element != null)
     {
+        if (ViewBag.UserType > 0)
+        {
+            <a href="/wiki/edit/@ViewBag.Element.Id">Edit Element</a>
+        }
+
+
         <h2>@ViewBag.Element.Title</h2>
+
+        if (ViewBag.Subs != null && ViewBag.Subs.Count > 0)
+        {
+            <ul>
+                @foreach (var e in ViewBag.Subs)
+                {
+                    <li><a href="/wiki/show/@e.Id">@e.Title</a></li>
+                }
+            </ul>
+        }
 
         <p>@ViewBag.Element.Body</p>
     }

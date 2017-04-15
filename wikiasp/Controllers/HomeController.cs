@@ -13,8 +13,7 @@ namespace wikiasp.Controllers
         public ActionResult Index()
         {
             var db = new WikiaModels();
-            int i = db.Wikias.Local.Count;
-            ViewBag.Count = i;
+            ViewBag.WikiList = db.Wikias.ToList();
             return View();
         }
 
