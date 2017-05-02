@@ -2,10 +2,11 @@
 
 @{
     ViewBag.Title = "Index";
+    ViewBag.AdminPage = "wiki";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Wikia List</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -13,39 +14,56 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Title)
+            Title
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.IndexElementId)
+            Index Element ID
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.CreationDate)
-        </th>
+        Creation Date
         <th>
-            @Html.DisplayNameFor(model => model.LastUpdateDate)
+            Last Update Date
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Title)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IndexElementId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreationDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.LastUpdateDate)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <a href="/wiki/show/@item.IndexElementId">@item.Title</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IndexElementId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdateDate)
+            </td>
+            <td>
+                <a class="btn btn-danger delete-btn" href="/admin/delete/@item.Id" onclick="deleteWikia(this)">Delete</a>
+            </td>
+        </tr>
+    }
 
 </table>
+
+
+<script>
+    var list = document.getElementsByClassName("delete-btn");
+
+    for (var i = 0; i < list.length; i++) {
+        var b = list[i];
+         b.onclick = (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to delete this wikia and its elements?")) {
+                window.location = e.target.getAttribute("href");
+            } else {
+                //nothing
+            }
+        }
+    }
+
+</script>

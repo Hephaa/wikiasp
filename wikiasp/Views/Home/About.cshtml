@@ -4,4 +4,6 @@
 <h2>@ViewBag.Title.</h2>
 <h3>@ViewBag.Message</h3>
 
-<p>Use this area to provide additional information.</p>
+<h4>A customizable wiki/board for different topics such as movies, books, games etc. and their sub-elements like characters, story, script etc. These elements have restrictions which makes them available to visit by anyone, only to registered users, only to users with privileges and only to admins. Elements can be edited by users depending on the restriction. User information and elements are stored in a MSSQL database. Project is made with ASP.NET MVC Framework.</h4>
+
+@Html.ActionLink("Back to previous page", null, null, null, new { href = Request.UrlReferrer })

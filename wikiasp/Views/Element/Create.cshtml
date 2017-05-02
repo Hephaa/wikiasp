@@ -2,28 +2,26 @@
 @model wikiasp.Models.Element
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Edit</h2>
+<h2>Creating a new element</h2>
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Add", "Element")) 
 {
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Element</h4>
+        <h4>With the "@ViewBag.Parent.Title" as the parent element</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
 
-        
 
         <div class="form-group">
             @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <input type="text" name="Title" value="@ViewBag.Element.Title" class="form-control"/>
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -33,7 +31,7 @@
             <div class="col-md-10">
                 <div class="row">
                     <div class="col-md-4">
-                        <textarea cols="50" rows="20" name="Body" class="form-control" id="ta-body">@ViewBag.Element.Body</textarea>
+                        <textarea cols="50" rows="20" name="Body" class="form-control" id="ta-body"></textarea>
                         @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-8">
@@ -51,7 +49,7 @@
                                 <ul>
                                     @{
                                         var db = new ElementModels();
-                                        int id = ViewBag.Element.WikiaId;
+                                        int id = ViewBag.Parent.WikiaId;
                                         List<Element> list = db.Element.Where(x => x.WikiaId == id).ToList();
                                         foreach (Element e in list)
                                         {
@@ -66,9 +64,12 @@
             </div>
         </div>
 
+        <input type="hidden" name="parentId" value="@ViewBag.Parent.Id" />
+        <input type="hidden" name="wikiaId" value="@ViewBag.Parent.WikiaId" />
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Update" class="btn btn-default" />
+                <input type="submit" value="Create" class="btn btn-default" />
             </div>
         </div>
     </div>
@@ -77,7 +78,6 @@
 <div>
     @Html.ActionLink("Back to previous page", null, null, null, new { href = Request.UrlReferrer })
 </div>
-
 
 
 <script>

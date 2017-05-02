@@ -1,10 +1,89 @@
-﻿@using Microsoft.AspNet.Identity
+﻿@using System.Text
+@using Microsoft.AspNet.Identity
 @using Microsoft.AspNet.Identity.EntityFramework
 @using wikiasp.Models
 
 @{
     ViewBag.Title = "Show";
+    ViewBag.ExtraInfo = "Creation Date: " + ViewBag.Element.CreationDate;
+    ViewBag.ExtraInfo2 = "Last Update Date:" + ViewBag.Element.LastUpdateDate;
     Layout = "~/Views/Shared/_Layout.cshtml";
+@helper SubElements(List<Element> list)
+{
+    <ul style="padding-left: 20px">
+        @foreach (Element e in list)
+        {
+            <li>
+                <a href="/wiki/show/@e.Id">@e.Title</a>
+            </li>
+            if (e.isParent == 1)
+            {
+                @SubElements(new ElementModels().Element.Where(x => x.ParentId == e.Id).ToList())
+                ;
+            }
+        }
+    </ul>
+}}
+
+@helper ProcessBody(string str)
+{
+    List<string> list = new List<string>();
+    string body = String.Copy(str);
+
+    //Finding links -- [[link||text]] => <a href="link">text</a>
+    body = body.Replace("[[", "<a href=\"");
+    body = body.Replace("||", "\" > ");
+    body = body.Replace("]]", "</a>");
+
+    //Turn \n line breaks to <br/>
+    body = body.Replace("\n", "<br/>");
+
+    while (body.IndexOf("==") != -1)
+    {
+        int i = body.IndexOf("==");
+
+        if (i > 0)
+        {
+            list.Add("<p>" + body.Substring(0, i) + "</p>");
+        }
+
+        body = body.Substring(i);
+
+        int j;
+        for (j = 0; j < 5; j++)
+        {
+            if (!body.ToCharArray()[j].Equals("=".ToCharArray()[0]))
+            {
+                break;
+            }
+        }
+
+        body = body.Substring(j);
+
+        i = body.IndexOf("==");
+
+        list.Add("<h" + j + ">" + body.Substring(0, i) + "</h" + j + ">");
+
+        body = body.Substring(i + j);
+    }
+
+    if (list.Count == 0)
+    {
+        @Html.Raw(body)
+    }
+    else
+    {
+        if (body.Length != 0)
+        {
+            list.Add("<p>" + body + "</p>");
+        }
+    }
+
+    for (int i = 0; i < list.Count; i++)
+    {
+        string e = list[i];
+        @Html.Raw(e)
+    }
 }
 
 @{
@@ -12,7 +91,14 @@
     {
         if (ViewBag.UserType > 0)
         {
-            <a href="/wiki/edit/@ViewBag.Element.Id">Edit Element</a>
+            <div class="btn-group" role="group" style="padding-top: 7px">
+                <a class="btn btn-primary" href="/wiki/edit/@ViewBag.Element.Id">Edit Element</a>
+                <a class="btn btn-info" href="/wiki/create/@ViewBag.Element.Id">Create a Sub Element</a>
+                @if (ViewBag.Element.ParentId != -1)
+                {
+                    <a class="btn btn-danger" id="deleteElement" href="/wiki/delete/@ViewBag.Element.Id">Delete</a>
+                }
+            </div>
         }
 
 
@@ -20,15 +106,26 @@
 
         if (ViewBag.Subs != null && ViewBag.Subs.Count > 0)
         {
-            <ul>
-                @foreach (var e in ViewBag.Subs)
-                {
-                    <li><a href="/wiki/show/@e.Id">@e.Title</a></li>
-                }
-            </ul>
+            <p>Sub Elements</p>
+            @SubElements(ViewBag.Subs)
+            <br/>
         }
 
-        <p>@ViewBag.Element.Body</p>
+        if (ViewBag.Siblings != null && ViewBag.Siblings.Count > 0)
+        {
+            <p>Related items from wikia</p>
+            <ul>
+                @foreach (var e in ViewBag.Siblings)
+                {
+                    <li>
+                        <a href="/wiki/show/@e.Id">@e.Title</a>
+                    </li>
+                }
+            </ul>
+            <br/>
+        }
+
+        <p>@ProcessBody(ViewBag.Element.Body)</p>
     }
     else
     {
@@ -36,4 +133,25 @@
     }
 }
 
+@if (ViewBag.Element.ParentId != -1)
+{
+    <a href="/wiki/show/@ViewBag.Element.ParentId">Back to parent element!</a>
+}
+else
+{
+    <a href="/">Back to main page!</a>
+}
 
+<script>
+    var deleteElement = document.getElementById("deleteElement");
+    if (deleteElement) {
+        deleteElement.onclick = (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to delete this element and its sub elements?")) {
+                window.location = deleteElement.getAttribute("href");
+            } else {
+                //nothing
+            }
+        }
+    }
+</script>

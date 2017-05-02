@@ -1,4 +1,5 @@
-﻿@model wikiasp.Models.Wikias
+﻿@using wikiasp.Models
+@model wikiasp.Models.Wikias
 
 @{
     ViewBag.Title = "Create";
@@ -24,11 +25,22 @@
         </div>
 
         <div class="form-group">
-           <label class="control-label col-md-2">Element Body</label>
+            <label class="control-label col-md-2">Element Body</label>
             <div class="col-md-10">
-                <textarea cols="50" rows="20" name="Body" class="form-control">
-                </textarea>
-                @Html.ValidationMessageFor(model => model.IndexElementId, "", new { @class = "text-danger" })
+                <div class="row">
+                    <div class="col-md-4">
+                        <textarea cols="50" rows="20" name="Body" id="ta-body" class="form-control"></textarea>
+                        @Html.ValidationMessageFor(model => model.IndexElementId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-8">
+                        <div><a style="display: inline" href="#" onclick="insertText('==Header==')" class="btn btn-primary">Add Header H2</a> ==Header==  ==>  <h2 style="display: inline">Header</h2></div><br />
+                        <div><a style="display: inline" href="#" onclick="insertText('===Header===')" class="btn btn-primary">Add Header H3</a> ===Header===  ==>  <h3 style="display: inline">Header</h3></div><br />
+                        <div><a style="display: inline" href="#" onclick="insertText('====Header====')" class="btn btn-primary">Add Header H4</a> ====Header====  ==>  <h4 style="display: inline">Header</h4></div><br />
+                        <div><a style="display: inline" href="#" onclick="insertText('=====Header=====')" class="btn btn-primary">Add Header H5</a> =====Header=====  ==>  <h5 style="display: inline">Header</h5></div><br />
+                        <div><a style="display: inline" href="#" onclick="insertText('[[http://google.com||Google]]')" class="btn btn-primary">Add A Link</a> [[http://google.com||Google]]  ==>  <a href="http://google.com">Google</a></div>
+                    </div>
+                </div>
+                
             </div>
         </div>
 
@@ -43,3 +55,20 @@
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
+
+<script>
+    function insertText(text) {
+        var txtarea = document.getElementById("ta-body");
+        var scrollPos = txtarea.scrollTop;
+        var caretPos = txtarea.selectionStart;
+
+        var front = (txtarea.value).substring(0, caretPos);
+        var back = (txtarea.value).substring(txtarea.selectionEnd, txtarea.value.length);
+        txtarea.value = front + text + back;
+        caretPos = caretPos + text.length;
+        txtarea.selectionStart = caretPos;
+        txtarea.selectionEnd = caretPos;
+        txtarea.focus();
+        txtarea.scrollTop = scrollPos;
+    }
+</script>

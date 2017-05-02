@@ -23,6 +23,33 @@ namespace wikiasp.Controllers
             return View(new WikiaModels().Wikias);
         }
 
+        public ActionResult Users()
+        {
+            if (GetUserType() != 2)
+            {
+                return Redirect("/");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Save()
+        {
+            string id = Request.Form["id"];
+            int userType = Convert.ToInt32(Request.Form["userType"]);
+
+            var db = new ApplicationDbContext();
+
+            ApplicationUser user =  db.Users.Find(id);
+
+            user.UserType = userType;
+
+            db.SaveChanges();
+
+            return Redirect("/admin/users");
+        }
+
         public ActionResult Create()
         {
 
@@ -49,47 +76,59 @@ namespace wikiasp.Controllers
 
             Wikias w = new Wikias();
             w.Title = title;
+            w.IndexElementId = -1;
+            w.CreationDate = DateTime.Now;
+            w.LastUpdateDate = DateTime.Now;
 
             wikiaDb.Wikias.Add(w);
 
+            wikiaDb.SaveChanges();
             
-
-            Wikias wiki = wikiaDb.Wikias.Last();
 
             var elementDb = new ElementModels();
 
+            Element element = new Element(title, body, w.Id);
+            element.CreationDate = DateTime.Now;
+            element.LastUpdateDate = DateTime.Now;
+            element.ParentId = -1;
 
-            elementDb.Element.Add(new Element(title, body, wiki.Id));
+            elementDb.Element.Add(element);
 
             elementDb.SaveChanges();
 
-            Element element = elementDb.Element.Last();
-
-            wiki.IndexElementId = element.Id;
+            w.IndexElementId = element.Id;
 
             wikiaDb.SaveChanges();
 
             return Redirect("/Admin");
         }
-        public ActionResult Edit()
+        public ActionResult Delete(int id)
         {
 
             if (GetUserType() != 2)
             {
                 return Redirect("/");
             }
+            var wikiDb = new WikiaModels();
+            Wikias wiki = wikiDb.Wikias.Find(id);
 
-            return View();
-        }
-        public ActionResult Delete()
-        {
+            wikiDb.Wikias.Remove(wiki);
 
-            if (GetUserType() != 2)
+            wikiDb.SaveChanges();
+
+
+            var db = new ElementModels();
+            List<Element> list = db.Element.Where(x => x.WikiaId == id).ToList();
+
+            foreach (Element e in list)
             {
-                return Redirect("/");
+                db.Element.Remove(e);
             }
+            db.SaveChanges();
+            
 
-            return View();
+
+            return Redirect("/admin/");
         }
 
         public int GetUserType()

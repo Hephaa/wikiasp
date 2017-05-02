@@ -1,0 +1,64 @@
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using wikiasp.Models
+
+@{
+    ViewBag.Title = "Users";
+    ViewBag.AdminPage = "user";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var db = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+
+    List<ApplicationUser> list = db.Users.ToList();
+
+}
+
+<h2>Users</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            User Type
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            Username
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in list) {
+    <tr>
+        <form action="/admin/save" method="post">
+            <td>
+                <select class="custom-select" id="slct" data-index="@item.UserType" name="userType">
+                    <option value="0">Normal</option>
+                    <option value="1">Mod</option>
+                    <option value="2">Admin</option>
+                </select>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                <button class="btn btn-default" type="submit">Save</button>
+            </td>
+            <input type="hidden" name="id" value="@item.Id"/>
+        </form>
+    </tr>
+}
+
+</table>
+
+<script>
+    var list = document.getElementsByClassName("custom-select");
+    for (var i = 0; i < list.length; i++) {
+        var slct = list[i];
+        slct.selectedIndex = slct.getAttribute("data-index");
+    }
+</script>

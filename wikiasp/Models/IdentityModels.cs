@@ -31,5 +31,8 @@ namespace wikiasp.Models
         {
             return new ApplicationDbContext();
         }
+        
+
+        //public System.Data.Entity.DbSet<wikiasp.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }
